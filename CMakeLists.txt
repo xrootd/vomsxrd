@@ -26,6 +26,14 @@ set( CMAKE_MODULE_PATH
  ${PROJECT_SOURCE_DIR}/src
  ${PROJECT_SOURCE_DIR}/cmake )
 
+#-------------------------------------------------------------------------------
+# Set HAVE_XRDCRYPTO if requested to do so
+#-------------------------------------------------------------------------------
+OPTION(HAVE_XRDCRYPTO "Do we have XrdCrypto headers?" FALSE)
+IF(HAVE_XRDCRYPTO)
+    ADD_DEFINITIONS(-DHAVE_XRDCRYPTO)
+ENDIF(HAVE_XRDCRYPTO)
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 include( vomsxrdOSDefs )

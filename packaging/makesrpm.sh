@@ -34,11 +34,6 @@ function printHelp()
   echo "                defaults to ../"                     1>&2
   echo "  --output PATH the directory where the source rpm"  1>&2
   echo "                should be stored, defaulting to ."   1>&2
-  echo "  --xrdsrc PATH specofy path to xrootd source tarball"  1>&2
-  echo "                default none (XrdCrypto deps not built)"   1>&2
-  echo "  --xrdvers VERSION the xrootd version against"      1>&2
-  echo "                which we are build (e.g. v3.3.1);"   1>&2
-  echo "                default none (XrdCrypto deps not built)"   1>&2
 }
 
 #-------------------------------------------------------------------------------
@@ -47,8 +42,6 @@ function printHelp()
 RPMNAME="vomsxrd"
 SOURCEPATH="../"
 OUTPUTPATH="."
-XRDSRCPATH=""
-XRDVERS=""
 PRINTHELP=0
 
 while test ${#} -ne 0; do
@@ -75,20 +68,6 @@ while test ${#} -ne 0; do
     fi
     OUTPUTPATH=${2}
     shift
-  elif test x${1} = x--xrdsrc; then
-    if test ${#} -lt 2; then
-      echo "--xrdsrc parameter needs an argument" 1>&2
-      exit 1
-    fi
-    XRDSRCPATH=${2}
-    shift
-  elif test x${1} = x--xrdvers; then
-    if test ${#} -lt 2; then
-      echo "--xrdvers parameter needs an argument" 1>&2
-      exit 1
-    fi
-    XRDVERS=${2}
-    shift
   fi
   shift
 done
@@ -101,9 +80,6 @@ fi
 echo "[i] Creating source RPM for '$RPMNAME'"
 echo "[i] Working on: $SOURCEPATH"
 echo "[i] Storing the output to: $OUTPUTPATH"
-if test ! "x$XRDSRCPATH" = "x" ; then
-   echo "[i] Taking XRootD source from $XRDSRCPATH"
-fi
 
 #-------------------------------------------------------------------------------
 # Check if the source and the output dirs
@@ -157,11 +133,6 @@ echo "[i] Working with version: $VERSION"
 
 if test x${VERSION:0:1} = x"v"; then
   VERSION=${VERSION:1}
-fi
-
-XRDV4="no"
-if test x${XRDVERS:0:2} = x"v4"; then
-  XRDV4="yes"
 fi
 
 #-------------------------------------------------------------------------------
@@ -220,54 +191,6 @@ if test $? -ne 0; then
   exit 6
 fi
 cd $CWD
-
-#-------------------------------------------------------------------------------
-# Retrieve xrootd tarball if required 
-#-------------------------------------------------------------------------------
-
-if test ! x$XRDVERS == x ; then
-   if test x${XRDVERS:0:1} = x"v"; then
-      XRDVERS=${XRDVERS:1}
-   fi
-   if test "x$XRDSRCPATH" = "x" ; then
-      wget http://xrootd.org/download/v$XRDVERS/xrootd-$XRDVERS.tar.gz -O $RPMSOURCES/xrootd.tar.gz
-   else
-      cp -rpL $XRDSRCPATH/xrootd-$XRDVERS.tar.gz $RPMSOURCES/xrootd.tar.gz
-   fi
-   if test $? -ne 0; then
-      echo "[!] Unable to retrieve the required XRootD source tarball" 1>&2
-      exit 6
-   fi
-   # Unpack and retrieve required files 
-   CWD=$PWD
-   cd $TEMPDIR
-   mkdir unpack
-   cd unpack
-   tar xzf $RPMSOURCES/$VXTARGZ
-   tar xzf $RPMSOURCES/xrootd.tar.gz
-   mkdir -p $VXPREF/src/XrdCrypto
-   xrdcryptoh="XrdCryptoAux.hh XrdCryptosslAux.hh XrdCryptoX509Chain.hh
-               XrdCryptoX509Crl.hh XrdCryptoX509Req.hh XrdCryptoRSA.hh
-               XrdCryptosslgsiAux.hh XrdCryptoX509Chain.hh XrdCryptoX509.hh"
-   XRDDIR="xrootd-$XRDVERS"
-   if test ! -d $XRDDIR; then
-      XRDDIR="xrootd"
-   fi
-   for h in $xrdcryptoh ; do
-      cp -rp $XRDDIR/src/XrdCrypto/$h $VXPREF/src/XrdCrypto
-   done
-   mkdir -p $VXPREF/src/XrdSut
-   xrdsuth="XrdSutAux.hh  XrdSutBucket.hh"
-   for h in $xrdsuth ; do
-      cp -rp $XRDDIR/src/XrdSut/$h $VXPREF/src/XrdSut
-   done
-   # Repack $VXTARGZ
-   tar czf $RPMSOURCES/$VXTARGZ $VXPREF
-   # Remove the xrootd tarball
-   rm -fr $RPMSOURCES/xrootd.tar.gz
-   # Restore working directory
-   cd $CWD
-fi
 
 #-------------------------------------------------------------------------------
 # Generate the spec file
