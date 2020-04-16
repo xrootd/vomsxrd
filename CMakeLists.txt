@@ -50,7 +50,7 @@ endmacro()
 # VOMS libs required
 #-------------------------------------------------------------------------------
 find_package( VOMS REQUIRED)
-find_package( XRootD REQUIRED)
+find_package( XRootD CONFIG REQUIRED)
 
 #-------------------------------------------------------------------------------
 # Build in subdirectories
