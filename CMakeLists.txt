@@ -14,13 +14,15 @@ if (NOT CMAKE_BUILD_TYPE)
       FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
-# Add uninstall target
-CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
-ADD_CUSTOM_TARGET(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
+if( NOT VOMSXRD_SUBMODULE )
+  # Add uninstall target
+  CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+  ADD_CUSTOM_TARGET(uninstall
+    "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
+endif()
 
 set( CMAKE_MODULE_PATH
  ${PROJECT_SOURCE_DIR}/src
@@ -29,7 +31,7 @@ set( CMAKE_MODULE_PATH
 #-------------------------------------------------------------------------------
 # Set HAVE_XRDCRYPTO if requested to do so
 #-------------------------------------------------------------------------------
-OPTION(HAVE_XRDCRYPTO "Do we have XrdCrypto headers?" FALSE)
+OPTION(HAVE_XRDCRYPTO "Do we have XrdCrypto headers?" TRUE)
 IF(HAVE_XRDCRYPTO)
     ADD_DEFINITIONS(-DHAVE_XRDCRYPTO)
 ENDIF(HAVE_XRDCRYPTO)
@@ -37,28 +39,33 @@ ENDIF(HAVE_XRDCRYPTO)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 include( vomsxrdOSDefs )
-#-------------------------------------------------------------------------------
-# Generate the version header
-#-------------------------------------------------------------------------------
-add_custom_target(
-  XrdSecgsiVOMSVers.hh
-  ${CMAKE_SOURCE_DIR}/genversion.sh ${CMAKE_SOURCE_DIR} )
-# sigh, yet another ugly hack :(
-macro( add_library _target )
-  _add_library( ${_target} ${ARGN} )
-  add_dependencies( ${_target} XrdSecgsiVOMSVers.hh )
-endmacro()
 
-macro( add_executable _target )
-  _add_executable( ${_target} ${ARGN} )
-  add_dependencies( ${_target} XrdSecgsiVOMSVers.hh )
-endmacro()
+if( NOT VOMSXRD_SUBMODULE )
+  #-------------------------------------------------------------------------------
+  # Generate the version header
+  #-------------------------------------------------------------------------------
+  add_custom_target(
+    XrdSecgsiVOMSVers.hh
+    ${CMAKE_SOURCE_DIR}/genversion.sh ${CMAKE_SOURCE_DIR} )
+  # sigh, yet another ugly hack :(
+  macro( add_library _target )
+    _add_library( ${_target} ${ARGN} )
+    add_dependencies( ${_target} XrdSecgsiVOMSVers.hh )
+  endmacro()
+
+  macro( add_executable _target )
+    _add_executable( ${_target} ${ARGN} )
+    add_dependencies( ${_target} XrdSecgsiVOMSVers.hh )
+  endmacro()
+endif()
 
 #-------------------------------------------------------------------------------
 # VOMS libs required
 #-------------------------------------------------------------------------------
 find_package( VOMS REQUIRED)
-find_package( XRootD CONFIG REQUIRED)
+if( NOT VOMSXRD_SUBMODULE )
+  find_package( XRootD CONFIG REQUIRED)
+endif()
 
 #-------------------------------------------------------------------------------
 # Build in subdirectories

@@ -18,7 +18,7 @@ if (XROOTD_VERSIONNED)
   add_library(
      ${LIB_XRD_SEC_GSI_VOMS}
      MODULE
-     ${CMAKE_SOURCE_DIR}/src/XrdSecgsiVOMSFun.cc )
+     XrdSecgsiVOMSFun.cc )
 
   target_link_libraries(
      ${LIB_XRD_SEC_GSI_VOMS}
@@ -40,7 +40,7 @@ else()
   add_library(
      ${LIB_XRD_SEC_GSI_VOMS}
      SHARED
-     ${CMAKE_SOURCE_DIR}/src/XrdSecgsiVOMSFun.cc )
+     XrdSecgsiVOMSFun.cc )
 
   target_link_libraries(
      ${LIB_XRD_SEC_GSI_VOMS}
