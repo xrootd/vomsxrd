@@ -79,8 +79,8 @@ install(
 
 install(
    FILES
-   ${VOMSXRD_BINARY_DIR}/XrdSecgsiVOMSVers.hh
-   ${VOMSXRD_SOURCE_DIR}/XrdSecgsiVOMS.hh
+   ${VOMSXRD_BINARY_DIR}/src/XrdSecgsiVOMSVers.hh
+   ${VOMSXRD_SOURCE_DIR}/src/XrdSecgsiVOMS.hh
    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vomsxrd )
 
 install(
