@@ -70,7 +70,6 @@ static XrdOucString gRequire;                  //  String with configuration opt
 static XrdOucString gGrpFmt;                   //  String to be used to format the content of XrdSecEntity::grps
 static XrdOucString gRoleFmt;                  //  String to be used to format the content of XrdSecEntity::role
 static XrdOucString gVoFmt;                    //  String to be used to format the content of XrdSecEntity::vorg
-static bool gFmtReplace = 0;                   //  If any format replacement is required
 
 static XrdSysError gDest(0, "secgsiVOMS_");
 static XrdSysLogger gLogger;
