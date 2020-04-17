@@ -7,6 +7,17 @@ if(NOT (CMAKE_VERSION VERSION_LESS "2.8.12"))
    cmake_policy(SET CMP0021 OLD)
 endif()
 
+#-------------------------------------------------------------------------------
+# Set helper dir variables
+#-------------------------------------------------------------------------------
+if( VOMSXRD_SUBMODULE )
+  set( VOMSXRD_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/XrdXrootdVoms )
+  set( VOMSXRD_BINARY_DIR ${CMAKE_BINARY_DIR}/src/XrdXrootdVoms )
+else()
+  set( VOMSXRD_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
+  set( VOMSXRD_BINARY_DIR ${CMAKE_BINARY_DIR} )
+endif()
+
 # make sure that the default is a RELEASE
 if (NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE RELEASE CACHE STRING
@@ -25,8 +36,8 @@ if( NOT VOMSXRD_SUBMODULE )
 endif()
 
 set( CMAKE_MODULE_PATH
- ${PROJECT_SOURCE_DIR}/src
- ${PROJECT_SOURCE_DIR}/cmake )
+ ${VOMSXRD_SOURCE_DIR}/src
+ ${VOMSXRD_SOURCE_DIR}/cmake )
 
 #-------------------------------------------------------------------------------
 # Set HAVE_XRDCRYPTO if requested to do so
@@ -36,28 +47,16 @@ IF(HAVE_XRDCRYPTO)
     ADD_DEFINITIONS(-DHAVE_XRDCRYPTO)
 ENDIF(HAVE_XRDCRYPTO)
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src ${VOMSXRD_SOURCE_DIR}/src)
 
 include( vomsxrdOSDefs )
 
-if( NOT VOMSXRD_SUBMODULE )
-  #-------------------------------------------------------------------------------
-  # Generate the version header
-  #-------------------------------------------------------------------------------
-  add_custom_target(
-    XrdSecgsiVOMSVers.hh
-    ${CMAKE_SOURCE_DIR}/genversion.sh ${CMAKE_SOURCE_DIR} )
-  # sigh, yet another ugly hack :(
-  macro( add_library _target )
-    _add_library( ${_target} ${ARGN} )
-    add_dependencies( ${_target} XrdSecgsiVOMSVers.hh )
-  endmacro()
-
-  macro( add_executable _target )
-    _add_executable( ${_target} ${ARGN} )
-    add_dependencies( ${_target} XrdSecgsiVOMSVers.hh )
-  endmacro()
-endif()
+#-------------------------------------------------------------------------------
+# Generate the version header
+#-------------------------------------------------------------------------------
+add_custom_target(
+  XrdSecgsiVOMSVers.hh
+  ${VOMSXRD_SOURCE_DIR}/genversion.sh ${VOMSXRD_SOURCE_DIR} )
 
 #-------------------------------------------------------------------------------
 # VOMS libs required

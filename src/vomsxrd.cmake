@@ -8,6 +8,11 @@ include_directories( ${XROOTD_INCLUDE_DIRS} )
 add_definitions(${XROOTD_CFLAGS})
 include( vomsxrdCommon )
 
+if( VOMSXRD_SUBMODULE )
+  set( XROOTD_VERSIONNED TRUE )
+  set( XROOTD_PLUGIN_VERSION ${PLUGIN_VERSION} )
+endif()
+
 #-------------------------------------------------------------------------------
 # Shared library version
 #-------------------------------------------------------------------------------
@@ -18,7 +23,7 @@ if (XROOTD_VERSIONNED)
   add_library(
      ${LIB_XRD_SEC_GSI_VOMS}
      MODULE
-     XrdSecgsiVOMSFun.cc )
+     ${VOMSXRD_SOURCE_DIR}/src/XrdSecgsiVOMSFun.cc )
 
   target_link_libraries(
      ${LIB_XRD_SEC_GSI_VOMS}
@@ -31,6 +36,10 @@ if (XROOTD_VERSIONNED)
      INTERFACE_LINK_LIBRARIES ""
      LINK_INTERFACE_LIBRARIES "" )
 
+  add_dependencies(
+     ${LIB_XRD_SEC_GSI_VOMS}
+     XrdSecgsiVOMSVers.hh )
+
 else()
 
   set( LIB_XRD_SEC_GSI_VOMS     XrdSecgsiVOMS )
@@ -40,7 +49,7 @@ else()
   add_library(
      ${LIB_XRD_SEC_GSI_VOMS}
      SHARED
-     XrdSecgsiVOMSFun.cc )
+     ${VOMSXRD_SOURCE_DIR}/src/XrdSecgsiVOMSFun.cc )
 
   target_link_libraries(
      ${LIB_XRD_SEC_GSI_VOMS}
@@ -54,6 +63,10 @@ else()
      SOVERSION ${XRD_SEC_GSI_VOMS_SOVERSION}
      LINK_INTERFACE_LIBRARIES "" )
 
+  add_dependencies(
+     ${LIB_XRD_SEC_GSI_VOMS}
+     XrdSecgsiVOMSVers.hh )
+
 endif()
 
 #-------------------------------------------------------------------------------
@@ -66,12 +79,12 @@ install(
 
 install(
    FILES
-   ${CMAKE_BINARY_DIR}/src/XrdSecgsiVOMSVers.hh
-   ${CMAKE_SOURCE_DIR}/src/XrdSecgsiVOMS.hh
+   ${VOMSXRD_BINARY_DIR}/XrdSecgsiVOMSVers.hh
+   ${VOMSXRD_SOURCE_DIR}/XrdSecgsiVOMS.hh
    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vomsxrd )
 
 install(
   FILES
-  ${PROJECT_SOURCE_DIR}/docs/man/libXrdSecgsiVOMS.1
+  ${VOMSXRD_SOURCE_DIR}/docs/man/libXrdSecgsiVOMS.1
   DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
 
