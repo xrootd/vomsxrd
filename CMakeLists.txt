@@ -61,21 +61,24 @@ add_custom_target(
 #-------------------------------------------------------------------------------
 # VOMS libs required
 #-------------------------------------------------------------------------------
-find_package( VOMS REQUIRED)
+find_package( VOMS )
 if( NOT VOMSXRD_SUBMODULE )
   find_package( XRootD CONFIG REQUIRED)
 endif()
 
-#-------------------------------------------------------------------------------
-# Build in subdirectories
-#-------------------------------------------------------------------------------
-add_subdirectory( src )
- 
-#-------------------------------------------------------------------------------
-# Summary
-#-------------------------------------------------------------------------------
-message( STATUS "----------------------------------------" )
-message( STATUS "Installation path: " ${CMAKE_INSTALL_PREFIX} )
-message( STATUS "Build type:        " ${CMAKE_BUILD_TYPE} )
-message( STATUS "----------------------------------------" )
-
+if( VOM_FOUND )
+  #-------------------------------------------------------------------------------
+  # Build in subdirectories
+  #-------------------------------------------------------------------------------
+  add_subdirectory( src )
+   
+  #-------------------------------------------------------------------------------
+  # Summary
+  #-------------------------------------------------------------------------------
+  message( STATUS "----------------------------------------" )
+  message( STATUS "Installation path: " ${CMAKE_INSTALL_PREFIX} )
+  message(t config --global push.default simple STATUS "Build type:        " ${CMAKE_BUILD_TYPE} )
+  message( STATUS "----------------------------------------" )
+elseif( NOT VOMSXRD_SUBMODULE )
+  message( ERROR "Failed to build vomsxrd, voms development package not found." )
+endif()
