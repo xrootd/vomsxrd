@@ -66,7 +66,7 @@ if( NOT VOMSXRD_SUBMODULE )
   find_package( XRootD CONFIG REQUIRED)
 endif()
 
-if( VOM_FOUND )
+if( VOMS_FOUND )
   #-------------------------------------------------------------------------------
   # Build in subdirectories
   #-------------------------------------------------------------------------------
