@@ -11,6 +11,7 @@ include( vomsxrdCommon )
 if( VOMSXRD_SUBMODULE )
   set( XROOTD_VERSIONNED TRUE )
   set( XROOTD_PLUGIN_VERSION ${PLUGIN_VERSION} )
+  set( XROOTD_LIBRARIES XrdCrypto )
 endif()
 
 #-------------------------------------------------------------------------------
